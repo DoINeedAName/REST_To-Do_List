@@ -2,10 +2,11 @@ version = 0.1
 [default]
 [default.deploy]
 [default.deploy.parameters]
-stack_name = "sam-app-2810"
+stack_name = "To-Do-List"
 s3_bucket = "aws-sam-cli-managed-default-samclisourcebucket-qsxax86vu1fh"
-s3_prefix = "sam-app-2810"
+s3_prefix = "To-Do-List"
 region = "us-east-1"
 capabilities = "CAPABILITY_IAM"
 disable_rollback = true
 image_repositories = []
+confirm_changeset = true
