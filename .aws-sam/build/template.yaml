@@ -13,17 +13,28 @@ Globals:
   Api:
     TracingEnabled: true
 Resources:
-  itemsTable:
+  ItemsTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
       PrimaryKey:
         Name: ItemID
         Type: Number
       TableName: Items
-  readAllItemsFunction:
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: API
+      EndpointConfiguration:
+        Type: REGIONAL
+      Cors:
+        AllowMethods: '''POST, GET, DELETE, PUT, OPTIONS'''
+        AllowHeaders: '''Content-Type, X-Amz-Date, Authentication, Authorization,
+          X-Api-Key, X-Amz-Security-Token'''
+        AllowOrigin: '''*'''
+  ReadAllItemsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: readAllItemsFunction
+      CodeUri: ReadAllItemsFunction
       Handler: readAllItems.handler
       Role: arn:aws:iam::998203903345:role/LabRole
       Architectures:
@@ -32,14 +43,16 @@ Resources:
         readItem:
           Type: Api
           Properties:
-            Path: /list/readAll
+            Path: /items/readAll
             Method: get
+            RestApiId:
+              Ref: ApiGateway
     Metadata:
-      SamResourceId: readAllItemsFunction
-  readOneItemFunction:
+      SamResourceId: ReadAllItemsFunction
+  ReadOneItemFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: readOneItemFunction
+      CodeUri: ReadOneItemFunction
       Handler: readOneItem.handler
       Role: arn:aws:iam::998203903345:role/LabRole
       Architectures:
@@ -48,14 +61,16 @@ Resources:
         readItem:
           Type: Api
           Properties:
-            Path: /list/readOne
+            Path: /items/readOne
             Method: get
+            RestApiId:
+              Ref: ApiGateway
     Metadata:
-      SamResourceId: readOneItemFunction
-  updateItemFunction:
+      SamResourceId: ReadOneItemFunction
+  UpdateItemFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: updateItemFunction
+      CodeUri: UpdateItemFunction
       Handler: updateItem.handler
       Role: arn:aws:iam::998203903345:role/LabRole
       Architectures:
@@ -64,14 +79,16 @@ Resources:
         UpdateItem:
           Type: Api
           Properties:
-            Path: /list/update
+            Path: /items/update
             Method: put
+            RestApiId:
+              Ref: ApiGateway
     Metadata:
-      SamResourceId: updateItemFunction
-  deleteItemFunction:
+      SamResourceId: UpdateItemFunction
+  DeleteItemFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: deleteItemFunction
+      CodeUri: DeleteItemFunction
       Handler: deleteItem.handler
       Role: arn:aws:iam::998203903345:role/LabRole
       Architectures:
@@ -80,14 +97,16 @@ Resources:
         DeleteItem:
           Type: Api
           Properties:
-            Path: /list/delete
+            Path: /items/delete
             Method: delete
+            RestApiId:
+              Ref: ApiGateway
     Metadata:
-      SamResourceId: deleteItemFunction
-  createItemFunction:
+      SamResourceId: DeleteItemFunction
+  CreateItemFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: createItemFunction
+      CodeUri: CreateItemFunction
       Handler: createItem.handler
       Role: arn:aws:iam::998203903345:role/LabRole
       Architectures:
@@ -96,7 +115,9 @@ Resources:
         CreateItem:
           Type: Api
           Properties:
-            Path: /list/create
+            Path: /items/create
             Method: post
+            RestApiId:
+              Ref: ApiGateway
     Metadata:
-      SamResourceId: createItemFunction
+      SamResourceId: CreateItemFunction

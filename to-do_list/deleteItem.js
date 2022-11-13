@@ -3,7 +3,7 @@ AWS.config.update({
     region: "us-east-1"
 });
 const docClient = new AWS.DynamoDB.DocumentClient();
-const path = "/list/delete";
+const path = "/items/delete";
 const tableName = "Items";
 
 exports.handler = async (event) => {
@@ -35,11 +35,19 @@ exports.handler = async (event) => {
 };
 
 function buildResponse(statusCode, body) {
-    return {
-        statusCode: statusCode,
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(body)
+  return {
+      statusCode: statusCode,
+      headers: {
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, ' +
+                                      'X-Amz-Date, ' +
+                                      'Authentication, ' +
+                                      'Authorization, ' +
+                                      'X-Api-Key, ' +
+                                      'X-Amz-Security-Token'
+    },
+    body: JSON.stringify(body)
     };
 };

@@ -4,7 +4,7 @@ AWS.config.update({
 });
 
 const docClient = new AWS.DynamoDB.DocumentClient();
-const path = "/list/update";
+const path = "/items/update";
 const tableName = "Items";
 
 exports.handler = async (event) => {
@@ -58,7 +58,15 @@ function buildResponse(statusCode, body) {
   return {
     statusCode: statusCode,
     headers: {
-      'Content-Type': 'application/json'
+      'Content-Type': 'application/json',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'PUT, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, ' +
+                                      'X-Amz-Date, ' +
+                                      'Authentication, ' +
+                                      'Authorization, ' +
+                                      'X-Api-Key, ' +
+                                      'X-Amz-Security-Token'
     },
     body: JSON.stringify(body)
   };

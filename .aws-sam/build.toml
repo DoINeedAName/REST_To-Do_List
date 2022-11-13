@@ -8,6 +8,6 @@ architecture = "x86_64"
 handler = "readItem.handler"
 manifest_hash = ""
 packagetype = "Zip"
-functions = ["readAllItemsFunction", "readOneItemFunction", "updateItemFunction", "deleteItemFunction", "createItemFunction"]
+functions = ["ReadAllItemsFunction", "ReadOneItemFunction", "UpdateItemFunction", "DeleteItemFunction", "CreateItemFunction"]
 
 [layer_build_definitions]

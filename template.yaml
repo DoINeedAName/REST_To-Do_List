@@ -16,16 +16,26 @@ Globals:
 
 Resources:
 # DynamoDB Table
-  itemsTable:
+  ItemsTable:
     Type: AWS::Serverless::SimpleTable
     Properties:
       PrimaryKey:
         Name: ItemID
         Type: Number
-
       TableName: Items
+
+  ApiGateway:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: API
+      EndpointConfiguration:
+        Type: REGIONAL
+      Cors:
+        AllowMethods: "'POST, GET, DELETE, PUT, OPTIONS'"
+        AllowHeaders: "'Content-Type, X-Amz-Date, Authentication, Authorization, X-Api-Key, X-Amz-Security-Token'"
+        AllowOrigin: "'*'"
   
-  readAllItemsFunction:
+  ReadAllItemsFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: to-do_list/
@@ -38,10 +48,17 @@ Resources:
         readItem:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /list/readAll
+            Path: /items/readAll
             Method: get
+            RestApiId: !Ref ApiGateway
+        # options:
+        #   Type: Api
+        #   Properties:
+        #     Path: /items/readAll
+        #     Method: options
+        #     RestApiId: !Ref ApiGateway
 
-  readOneItemFunction:
+  ReadOneItemFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: to-do_list/
@@ -52,12 +69,19 @@ Resources:
         - x86_64
       Events:
         readItem:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: Api
           Properties:
-            Path: /list/readOne
+            Path: /items/readOne
             Method: get
+            RestApiId: !Ref ApiGateway
+        # options:
+        #   Type: Api
+        #   Properties:
+        #     Path: /items/readOne
+        #     Method: options
+        #     RestApiId: !Ref ApiGateway
   
-  updateItemFunction:
+  UpdateItemFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: to-do_list/
@@ -70,10 +94,17 @@ Resources:
         UpdateItem:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /list/update
+            Path: /items/update
             Method: put
+            RestApiId: !Ref ApiGateway
+        # options:
+        #   Type: Api
+        #   Properties:
+        #     Path: /items/update
+        #     Method: OPTIONS
+        #     RestApiId: !Ref ApiGateway
 
-  deleteItemFunction:
+  DeleteItemFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: to-do_list/
@@ -86,10 +117,17 @@ Resources:
         DeleteItem:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /list/delete
+            Path: /items/delete
             Method: delete
+            RestApiId: !Ref ApiGateway
+        # options:
+        #   Type: Api
+        #   Properties:
+        #     Path: /items/delete
+        #     Method: OPTIONS
+        #     RestApiId: !Ref ApiGateway
 
-  createItemFunction:
+  CreateItemFunction:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: to-do_list/
@@ -102,8 +140,15 @@ Resources:
         CreateItem:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
-            Path: /list/create
+            Path: /items/create
             Method: post
+            RestApiId: !Ref ApiGateway
+        # options:
+        #   Type: Api
+        #   Properties:
+        #     Path: /items/create
+        #     Method: OPTIONS
+        #     RestApiId: !Ref ApiGateway
 
 # Outputs:
   # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
