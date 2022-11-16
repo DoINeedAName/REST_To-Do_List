@@ -1,14 +1,18 @@
 const AWS = require("aws-sdk");
+// const {randomUUID} = require('crypto')
+
 AWS.config.update({
     region: "us-east-1"
 });
+
 const docClient = new AWS.DynamoDB.DocumentClient();
 const cognitoProvider = new AWS.CognitoIdentityServiceProvider();
-const path = "/items";
+const itemsPath = "/items";
 const tableName = "Items";
 
 exports.handler = async (event) => {
-    console.log('Request event: ', event);
+    // console.log(randomUUID());
+    // console.log("Request event: ", event);
     let response;
 
     console.log('Request event: ', event);
@@ -22,7 +26,7 @@ exports.handler = async (event) => {
     }
 
     let role = await getUserRole(token);
-    const accessAllowed = ["admin"];
+    const accessAllowed = ["admin", "viewer"];
     if (!accessAllowed.includes(role)) {
         response = buildResponse(
             500,
@@ -33,26 +37,45 @@ exports.handler = async (event) => {
 
     console.log("Role returned - " + role);
 
-    let itemId = event.queryStringParameters.itemId;
-    if(event.httpMethod === 'DELETE' && event.path === path) {
-        const params = {
-            TableName: tableName,
-            Key: {
-                'ItemID': parseInt(itemId)
-            }
-        };
-
-        await docClient.delete(params).promise().then((data) => {
-            response = buildResponse(200, "Item deleted successfully");
-            console.log('Deleted successfully. ' + response);
-            console.log(response);
-        }, (error) => {
-            console.error('Unable to delete item. Error JSON: ', error);
-            response = buildResponse(
-                500,
-                {'error': error}
-            );
-        });
+    // let itemID = event.queryStringParameters.itemID;
+    if (event.httpMethod === 'GET' && event.path === itemsPath) { 
+        if(event.queryStringParameters && event.queryStringParameters.hasOwnProperty("itemId")) {
+            let itemId = event.queryStringParameters && event.queryStringParameters.itemId
+            console.log("ItemID is: " + itemId);
+            const params = {
+                TableName: tableName,
+                Key: {
+                    "ItemID": parseInt(itemId)
+                }
+            };
+            await docClient.get(params).promise().then((data) => {
+                response = buildResponse(200, data.Item);
+                console.log(data);
+                console.log("Read successfully. " + response);
+                console.log(response);
+            }, (error) => {
+                console.error('Unable to read item. Error JSON: ', error);
+                response = buildResponse(
+                    500,
+                    {'error': error}
+                );
+            });
+        } else {
+            const params = {
+                TableName: tableName,
+            };
+            await docClient.scan(params).promise().then((data) => {
+                response = buildResponse(200, data.Items);
+                console.log('Read all successfully. ' + response);
+                console.log(response);
+            }, (error) => {
+                console.error('Unable to read all items. Error JSON: ', error);
+                response = buildResponse(
+                    500,
+                    {'error': error}
+                );
+            });
+        }     
     }
     console.log(response);
     return response;
@@ -60,11 +83,11 @@ exports.handler = async (event) => {
 
 function buildResponse(statusCode, body) {
   return {
-      statusCode: statusCode,
-      headers: {
+    statusCode: statusCode,
+    headers: {
       'Content-Type': 'application/json',
       'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'DELETE, OPTIONS',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
       'Access-Control-Allow-Headers': 'Content-Type, ' +
                                       'X-Amz-Date, ' +
                                       'Authentication, ' +
@@ -74,7 +97,7 @@ function buildResponse(statusCode, body) {
     },
     body: JSON.stringify(body)
     };
-};
+}
 
 async function getUserRole(token) {
     let getUserParams = {

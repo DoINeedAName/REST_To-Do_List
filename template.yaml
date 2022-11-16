@@ -5,7 +5,6 @@ Description: >
 
   Sample SAM Template for REST_To-Do_List
   
-# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
 Globals:
   Function:
     Runtime: nodejs16.x
@@ -34,55 +33,284 @@ Resources:
         AllowMethods: "'POST, GET, DELETE, PUT, OPTIONS'"
         AllowHeaders: "'Content-Type, X-Amz-Date, Authentication, Authorization, X-Api-Key, X-Amz-Security-Token'"
         AllowOrigin: "'*'"
-  
-  ReadAllItemsFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
-    Properties:
-      CodeUri: to-do_list/
-      Handler: readAllItems.handler
-      # Runtime: nodejs16.x
-      Role: arn:aws:iam::998203903345:role/LabRole
-      Architectures:
-        - x86_64
-      Events:
-        readItem:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
-          Properties:
-            Path: /items/readAll
-            Method: get
-            RestApiId: !Ref ApiGateway
-        # options:
-        #   Type: Api
-        #   Properties:
-        #     Path: /items/readAll
-        #     Method: options
-        #     RestApiId: !Ref ApiGateway
+      Auth:
+        Authorizers:
+          MyCognitoAuth:
+            UserPoolArn:
+              Fn::GetAtt:
+                - CognitoUserPool
+                - Arn
+      # Models:
+      #   title: Create
+      #   type: object
+      #   # required:
+      #   #   - title
+      #   #   - titleValue
+      #   #   - details
+      #   #   - detailsValue
+      #   #   - dueDate
+      #   #   - dueDateValue
+      #   #   - completed
+      #   #   - completedValue
+      #   properties:
 
-  ReadOneItemFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+  CreateMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref ApiGateway
+      ResourceId: !Ref ItemsResource
+      AuthorizationType: NONE
+      HttpMethod: POST
+      RequestModels: 
+        Body: !Ref CreateModel
+  
+  ItemsResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      ParentId: !Ref ApiGateway.RootResourceId
+      PathPart: items
+      RestApiId: !Ref ApiGateway
+          
+  CreateModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      RestApiId: !Ref ApiGateway
+      ContentType: application/json
+      Description: Schema for creating item
+      Name: CreateItemModel
+      Schema:
+        $schema: 'htp://json-schema.org/draft-04/schema#'
+        title: Create
+        type: object
+        properties:
+          Title:
+            type: string
+          Details:
+            type: string
+          DueDate:
+            type: string
+          Completed:
+            type: boolean
+  
+  UpdateModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      RestApiId: !Ref ApiGateway
+      ContentType: application/json
+      Description: Schema for updating item
+      Name: UpdateItemModel
+      Schema:
+        $schema: 'htp://json-schema.org/draft-04/schema#'
+        title: Update
+        type: object
+        properties:
+          title:
+            type: string
+          titleValue:
+            type: string
+          details:
+            type: string
+          detailsValue:
+            type: string
+          dueDate:
+            type: string
+          dueDateValue:
+            type: string
+          completed: 
+            type: string
+          completedValue:
+            type: string
+
+  CreateMethodDocPart:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      Location:
+        Type: METHOD
+        Method: POST
+        Path: /items 
+      Properties: '{"tags": ["items"], "description": "Method to create item"}'
+      RestApiId: !Ref ApiGateway
+
+  ReadMethodDocPart:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      Location:
+        Type: METHOD
+        Method: GET
+        Path: /items
+      Properties: '{"tags": ["items"], "description": "Method to read one item with query or all without query"}'
+      RestApiId: !Ref ApiGateway
+
+  ReadQueryDoc:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      Location:
+        Type: QUERY_PARAMETER
+        Path: /items
+        Method: GET
+        Name: itemId
+      Properties: '{"Description": "ID of item used for searching."}'
+      RestApiId: !Ref ApiGateway
+
+  UpdateMethodDocPart:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      Location:
+        Type: METHOD
+        Method: PUT
+        Path: /items
+      Properties: '{"tags": ["items"], "description": "Method to update an item"}'
+      RestApiId: !Ref ApiGateway
+
+  UpdateQueryDoc:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      Location:
+        Type: QUERY_PARAMETER
+        Path: /items
+        Method: PUT
+        Name: itemId
+      Properties: '{"Description": "ID of item used for searching."}'
+      RestApiId: !Ref ApiGateway
+
+  DeleteMethodDocPart:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      Location:
+        Type: METHOD
+        Method: DELETE
+        Path: /items
+      Properties: '{"tags": ["items"], "description": "Method to delete an item"}'
+      RestApiId: !Ref ApiGateway
+
+  DeleteQueryDoc:
+    Type: AWS::ApiGateway::DocumentationPart
+    Properties:
+      Location:
+        Type: QUERY_PARAMETER
+        Path: /items
+        Method: DELETE
+        Name: itemId
+      Properties: '{"Description": "ID of item used for searching."}'
+      RestApiId: !Ref ApiGateway
+
+  DocVersion:
+    Type: AWS::ApiGateway::DocumentationVersion
+    Properties:
+      Description: Initial version
+      DocumentationVersion: v1.0
+      RestApiId: !Ref ApiGateway
+
+  CognitoUserPool:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: To-Do-UserPool
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireNumbers: true
+          RequireSymbols: true
+          RequireUppercase: true
+      Schema:
+        - Name: email
+          Required: True
+        - Name: role
+          Required: false
+          Mutable: true
+          AttributeDataType: String
+      AutoVerifiedAttributes:
+        - email
+
+  CognitoUserPoolClient:
+    Type: AWS::Cognito::UserPoolClient
+    Properties:
+      UserPoolId: !Ref CognitoUserPool
+      ClientName: To-Do-UserPoolClient
+      GenerateSecret: False
+      ExplicitAuthFlows:
+        - ALLOW_ADMIN_USER_PASSWORD_AUTH
+        - ALLOW_CUSTOM_AUTH
+        - ALLOW_USER_PASSWORD_AUTH
+        - ALLOW_USER_SRP_AUTH
+        - ALLOW_REFRESH_TOKEN_AUTH
+      EnableTokenRevocation: True
+      SupportedIdentityProviders:
+        - COGNITO
+      CallbackURLs:
+        - https://holmesglen.edu.au/
+      LogoutURLs:
+        - https://holmesglen.edu.au/
+      AllowedOAuthFlows:
+        - implicit
+      AllowedOAuthScopes:
+        - aws.cognito.signin.user.admin
+      PreventUserExistenceErrors: ENABLED
+      ReadAttributes:
+        - address
+        - nickname
+        - birthdate
+        - phone_number
+        - email
+        - phone_number_verified
+        - email_verified
+        - picture
+        - family_name
+        - preferred_username
+        - gender
+        - profile
+        - given_name
+        - zoneinfo
+        - locale
+        - updated_at
+        - middle_name
+        - website
+        - name
+        - custom:role
+      WriteAttributes:
+        - address
+        - nickname
+        - birthdate
+        - phone_number
+        - email
+        - picture
+        - family_name
+        - preferred_username
+        - gender
+        - profile
+        - given_name
+        - zoneinfo
+        - locale
+        - updated_at
+        - middle_name
+        - website
+        - name
+
+  PoolDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: todolist
+      UserPoolId: !Ref CognitoUserPool
+
+  ReadItemFunction:
+    Type: AWS::Serverless::Function 
     Properties:
       CodeUri: to-do_list/
-      Handler: readOneItem.handler
+      Handler: readItem.handler
       # Runtime: nodejs16.x
       Role: arn:aws:iam::998203903345:role/LabRole
       Architectures:
         - x86_64
       Events:
         readItem:
-          Type: Api
+          Type: Api 
           Properties:
-            Path: /items/readOne
+            Path: /items
             Method: get
             RestApiId: !Ref ApiGateway
-        # options:
-        #   Type: Api
-        #   Properties:
-        #     Path: /items/readOne
-        #     Method: options
-        #     RestApiId: !Ref ApiGateway
   
   UpdateItemFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function 
     Properties:
       CodeUri: to-do_list/
       Handler: updateItem.handler
@@ -92,20 +320,14 @@ Resources:
         - x86_64
       Events:
         UpdateItem:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: Api 
           Properties:
-            Path: /items/update
+            Path: /items
             Method: put
             RestApiId: !Ref ApiGateway
-        # options:
-        #   Type: Api
-        #   Properties:
-        #     Path: /items/update
-        #     Method: OPTIONS
-        #     RestApiId: !Ref ApiGateway
 
   DeleteItemFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function 
     Properties:
       CodeUri: to-do_list/
       Handler: deleteItem.handler
@@ -115,20 +337,14 @@ Resources:
         - x86_64
       Events:
         DeleteItem:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: Api 
           Properties:
-            Path: /items/delete
+            Path: /items
             Method: delete
             RestApiId: !Ref ApiGateway
-        # options:
-        #   Type: Api
-        #   Properties:
-        #     Path: /items/delete
-        #     Method: OPTIONS
-        #     RestApiId: !Ref ApiGateway
 
   CreateItemFunction:
-    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Type: AWS::Serverless::Function 
     Properties:
       CodeUri: to-do_list/
       Handler: createItem.handler
@@ -138,25 +354,73 @@ Resources:
         - x86_64
       Events:
         CreateItem:
-          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Type: Api 
           Properties:
-            Path: /items/create
+            Path: /items
             Method: post
             RestApiId: !Ref ApiGateway
-        # options:
-        #   Type: Api
-        #   Properties:
-        #     Path: /items/create
-        #     Method: OPTIONS
-        #     RestApiId: !Ref ApiGateway
+
+  AuthFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: to-do_list/
+      Handler: auth.handler
+      # Runtime: nodejs16.x
+      Role: arn:aws:iam::998203903345:role/LabRole
+      Architectures:
+        - x86_64
+      Events:
+        Login:
+          Type: Api
+          Properties:
+            Path: /items/login
+            Method: post
+            RestApiId: !Ref ApiGateway
+        LogOut:
+          Type: Api
+          Properties:
+            Path: /items/logout
+            Method: post
+            RestApiId: !Ref ApiGateway
+        Register:
+          Type: Api
+          Properties:
+            Path: /items/register
+            Method: post
+            RestApiId: !Ref ApiGateway
+        Refresh:
+          Type: Api
+          Properties:
+            Path: /items/refresh
+            Method: post
+            RestApiId: !Ref ApiGateway
+  
+  RoleFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: to-do_list/
+      Handler: roleManager.handler
+      MemorySize: 256
+      Role: arn:aws:iam::998203903345:role/LabRole
+      Architectures:
+        - x86_64
+      Events:
+        SetRole:
+          Type: Api
+          Properties:
+            Path: /items/roleManager
+            Method: post
+            RestApiId: !Ref ApiGateway
+    
 
 # Outputs:
-  # ServerlessRestApi is an implicit API created out of Events key under Serverless::Function
-  # Find out more about other implicit resources you can reference within SAM
-  # https://github.com/awslabs/serverless-application-model/blob/master/docs/internals/generated_resources.rst#api
-  # HelloWorldApi:
-  #   Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-  #   Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
-  # # HelloWorldFunction:
-  #   Description: "Hello World Lambda Function ARN"
-  #   Value: !GetAtt HelloWorldFunction.Arn
+#   UserPoolId:
+#     Description:
+#       The ID of the user pool for the application
+#     Value:
+#      !Ref CognitoUserPool
+#     AppClientId:
+#       Description:
+#         The ID of the client
+#       Value:
+#         !Ref CognitoUserPoolClient
