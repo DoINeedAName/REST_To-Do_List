@@ -13,7 +13,7 @@ exports.handler = async (event) => {
   let response;
 
   console.log('Request event: ', event);
-    let token = event.headers.Authorization;
+    let token = event.headers.Authentication;
     if (!token) {
         response = buildResponse(
             500,

@@ -3,8 +3,8 @@ const AWS = require("aws-sdk");
 const cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider({
   region: 'us-east-1'
 });
-const clientId = '19sg015uj1i7f1jedoagcvo9t9';
-const userPoolId = 'us-east-1_Q5rfyIZ6x';
+const clientId = 'eq77br5ct0pdc1fiufb50lc1c';
+const userPoolId = 'us-east-1_eDIQHalKN';
 
 exports.handler = async (event) => {
   console.log("path: " + event.path);
@@ -127,13 +127,13 @@ async function register(userName, password, email) {
     return result;
 };
 
-async function login(userName, password) {
+async function login(email, password) {
   var params = {
     AuthFlow: 'ADMIN_NO_SRP_AUTH',
     ClientId: clientId,
     UserPoolId: userPoolId,
     AuthParameters: {
-      'USERNAME': userName,
+      'EMAIL': email,
       'PASSWORD': password
     }
   };

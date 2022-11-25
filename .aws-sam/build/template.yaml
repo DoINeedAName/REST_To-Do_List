@@ -32,34 +32,16 @@ Resources:
           X-Api-Key, X-Amz-Security-Token'''
         AllowOrigin: '''*'''
       Auth:
+        DefaultAuthorizer: MyCognitoAuth
+        AddDefaultAuthorizerToCorsPreflight: true
         Authorizers:
           MyCognitoAuth:
+            Identity:
+              Header: Authentication
             UserPoolArn:
               Fn::GetAtt:
               - CognitoUserPool
               - Arn
-  CreateMethod:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      RestApiId:
-        Ref: ApiGateway
-      ResourceId:
-        Ref: ItemsResource
-      AuthorizationType: NONE
-      HttpMethod: POST
-      RequestModels:
-        Body:
-          Ref: CreateModel
-  ItemsResource:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      ParentId:
-        Fn::GetAtt:
-        - ApiGateway
-        - RootResourceId
-      PathPart: items
-      RestApiId:
-        Ref: ApiGateway
   CreateModel:
     Type: AWS::ApiGateway::Model
     Properties:
@@ -69,7 +51,7 @@ Resources:
       Description: Schema for creating item
       Name: CreateItemModel
       Schema:
-        $schema: htp://json-schema.org/draft-04/schema#
+        $schema: http://json-schema.org/draft-04/schema#
         title: Create
         type: object
         properties:
@@ -81,6 +63,54 @@ Resources:
             type: string
           Completed:
             type: boolean
+  LoginModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      RestApiId:
+        Ref: ApiGateway
+      ContentType: application/json
+      Description: Schema for logging in user
+      Name: LoginModel
+      Schema:
+        $schema: http://json-schema.org/draft-04/schema#
+        title: Login
+        type: object
+        properties:
+          email:
+            type: string
+          password:
+            type: string
+  RegisterModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      RestApiId:
+        Ref: ApiGateway
+      ContentType: application/json
+      Description: Schema for registering a user
+      Name: RegisterModel
+      Schema:
+        $schema: http://json-schema.org/draft-04/schema#
+        title: Register
+        type: object
+        properties:
+          username:
+            type: string
+          email:
+            type: string
+          password:
+            type: string
+  EmptyModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      RestApiId:
+        Ref: ApiGateway
+      ContentType: application/json
+      Description: Default empty schema model
+      Name: EmptyModel
+      Schema:
+        $schema: http://json-schema.org/draft-04/schema#
+        title: Empty
+        type: object
   UpdateModel:
     Type: AWS::ApiGateway::Model
     Properties:
@@ -88,9 +118,9 @@ Resources:
         Ref: ApiGateway
       ContentType: application/json
       Description: Schema for updating item
-      Name: UpdateItemModel
+      Name: UpdateItem
       Schema:
-        $schema: htp://json-schema.org/draft-04/schema#
+        $schema: http://json-schema.org/draft-04/schema#
         title: Update
         type: object
         properties:
@@ -178,7 +208,7 @@ Resources:
     Properties:
       Location:
         Type: QUERY_PARAMETER
-        Path: /items
+        Path: items
         Method: DELETE
         Name: itemId
       Properties: '{"Description": "ID of item used for searching."}'
@@ -295,6 +325,8 @@ Resources:
           Properties:
             Path: /items
             Method: get
+            RequestParameters:
+            - method.request.querystring.itemId
             RestApiId:
               Ref: ApiGateway
     Metadata:
@@ -313,6 +345,8 @@ Resources:
           Properties:
             Path: /items
             Method: put
+            RequestParameters:
+            - method.request.querystring.itemId
             RestApiId:
               Ref: ApiGateway
     Metadata:
@@ -331,6 +365,8 @@ Resources:
           Properties:
             Path: /items
             Method: delete
+            RequestParameters:
+            - method.request.querystring.itemId
             RestApiId:
               Ref: ApiGateway
     Metadata:

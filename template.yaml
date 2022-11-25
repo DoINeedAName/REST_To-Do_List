@@ -34,43 +34,54 @@ Resources:
         AllowHeaders: "'Content-Type, X-Amz-Date, Authentication, Authorization, X-Api-Key, X-Amz-Security-Token'"
         AllowOrigin: "'*'"
       Auth:
+        DefaultAuthorizer: MyCognitoAuth
+        AddDefaultAuthorizerToCorsPreflight: true
         Authorizers:
           MyCognitoAuth:
+            Identity:
+              Header: Authentication
             UserPoolArn:
               Fn::GetAtt:
                 - CognitoUserPool
                 - Arn
       # Models:
-      #   title: Create
-      #   type: object
-      #   # required:
-      #   #   - title
-      #   #   - titleValue
-      #   #   - details
-      #   #   - detailsValue
-      #   #   - dueDate
-      #   #   - dueDateValue
-      #   #   - completed
-      #   #   - completedValue
-      #   properties:
+      #   Create:
+      #     # required:
+      #     #   - title
+      #     #   - titleValue
+      #     #   - details
+      #     #   - detailsValue
+      #     #   - dueDate
+      #     #   - dueDateValue
+      #     #   - completed
+      #     #   - completedValue
+      #     Properties:
+      #       Title:
+      #         type: string
+      #       Details:
+      #         type: string
+      #       DueDate:
+      #         type: string
+      #       Completed:
+      #         type: boolean
 
-  CreateMethod:
-    Type: AWS::ApiGateway::Method
-    Properties:
-      RestApiId: !Ref ApiGateway
-      ResourceId: !Ref ItemsResource
-      AuthorizationType: NONE
-      HttpMethod: POST
-      RequestModels: 
-        Body: !Ref CreateModel
-  
-  ItemsResource:
-    Type: AWS::ApiGateway::Resource
-    Properties:
-      ParentId: !Ref ApiGateway.RootResourceId
-      PathPart: items
-      RestApiId: !Ref ApiGateway
-          
+  # ItemsResource:
+  #   Type: AWS::ApiGateway::Resource
+  #   Properties:
+  #     ParentId: !GetAtt ApiGateway.RootResourceId
+  #     PathPart: items
+  #     RestApiId: !Ref ApiGateway
+
+  # CreateMethod:
+  #   Type: AWS::ApiGateway::Method
+  #   Properties:
+  #     RestApiId: !Ref ApiGateway
+  #     ResourceId: !Ref ItemsResource
+  #     AuthorizationType: NONE
+  #     HttpMethod: POST
+  #     RequestModels: 
+  #       $default: !Ref CreateModel
+           
   CreateModel:
     Type: AWS::ApiGateway::Model
     Properties:
@@ -79,7 +90,7 @@ Resources:
       Description: Schema for creating item
       Name: CreateItemModel
       Schema:
-        $schema: 'htp://json-schema.org/draft-04/schema#'
+        $schema: 'http://json-schema.org/draft-04/schema#'
         title: Create
         type: object
         properties:
@@ -91,6 +102,54 @@ Resources:
             type: string
           Completed:
             type: boolean
+
+  LoginModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      RestApiId: !Ref ApiGateway
+      ContentType: application/json
+      Description: Schema for logging in user
+      Name: LoginModel
+      Schema:
+        $schema: 'http://json-schema.org/draft-04/schema#'
+        title: Login
+        type: object
+        properties:
+          email:
+            type: string
+          password:
+            type: string
+
+  RegisterModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      RestApiId: !Ref ApiGateway
+      ContentType: application/json
+      Description: Schema for registering a user
+      Name: RegisterModel
+      Schema:
+        $schema: 'http://json-schema.org/draft-04/schema#'
+        title: Register
+        type: object
+        properties:
+          username:
+            type: string
+          email:
+            type: string
+          password:
+            type: string
+
+  EmptyModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      RestApiId: !Ref ApiGateway
+      ContentType: application/json
+      Description: Default empty schema model
+      Name: EmptyModel
+      Schema:
+        $schema: 'http://json-schema.org/draft-04/schema#'
+        title: Empty
+        type: object
   
   UpdateModel:
     Type: AWS::ApiGateway::Model
@@ -98,9 +157,9 @@ Resources:
       RestApiId: !Ref ApiGateway
       ContentType: application/json
       Description: Schema for updating item
-      Name: UpdateItemModel
+      Name: UpdateItem
       Schema:
-        $schema: 'htp://json-schema.org/draft-04/schema#'
+        $schema: 'http://json-schema.org/draft-04/schema#'
         title: Update
         type: object
         properties:
@@ -188,7 +247,7 @@ Resources:
     Properties:
       Location:
         Type: QUERY_PARAMETER
-        Path: /items
+        Path: items
         Method: DELETE
         Name: itemId
       Properties: '{"Description": "ID of item used for searching."}'
@@ -307,6 +366,8 @@ Resources:
           Properties:
             Path: /items
             Method: get
+            RequestParameters: 
+              - method.request.querystring.itemId
             RestApiId: !Ref ApiGateway
   
   UpdateItemFunction:
@@ -324,6 +385,8 @@ Resources:
           Properties:
             Path: /items
             Method: put
+            RequestParameters: 
+              - method.request.querystring.itemId
             RestApiId: !Ref ApiGateway
 
   DeleteItemFunction:
@@ -341,6 +404,8 @@ Resources:
           Properties:
             Path: /items
             Method: delete
+            RequestParameters: 
+              - method.request.querystring.itemId
             RestApiId: !Ref ApiGateway
 
   CreateItemFunction:
@@ -358,6 +423,7 @@ Resources:
           Properties:
             Path: /items
             Method: post
+            # RequestModel: !Ref CreateModel
             RestApiId: !Ref ApiGateway
 
   AuthFunction:
