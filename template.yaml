@@ -82,183 +82,183 @@ Resources:
   #     RequestModels: 
   #       $default: !Ref CreateModel
            
-  CreateModel:
-    Type: AWS::ApiGateway::Model
-    Properties:
-      RestApiId: !Ref ApiGateway
-      ContentType: application/json
-      Description: Schema for creating item
-      Name: CreateItemModel
-      Schema:
-        $schema: 'http://json-schema.org/draft-04/schema#'
-        title: Create
-        type: object
-        properties:
-          Title:
-            type: string
-          Details:
-            type: string
-          DueDate:
-            type: string
-          Completed:
-            type: boolean
+  # CreateModel:
+  #   Type: AWS::ApiGateway::Model
+  #   Properties:
+  #     RestApiId: !Ref ApiGateway
+  #     ContentType: application/json
+  #     Description: Schema for creating item
+  #     Name: CreateItemModel
+  #     Schema:
+  #       $schema: 'http://json-schema.org/draft-04/schema#'
+  #       title: Create
+  #       type: object
+  #       properties:
+  #         Title:
+  #           type: string
+  #         Details:
+  #           type: string
+  #         DueDate:
+  #           type: string
+  #         Completed:
+  #           type: boolean
 
-  LoginModel:
-    Type: AWS::ApiGateway::Model
-    Properties:
-      RestApiId: !Ref ApiGateway
-      ContentType: application/json
-      Description: Schema for logging in user
-      Name: LoginModel
-      Schema:
-        $schema: 'http://json-schema.org/draft-04/schema#'
-        title: Login
-        type: object
-        properties:
-          email:
-            type: string
-          password:
-            type: string
+  # LoginModel:
+  #   Type: AWS::ApiGateway::Model
+  #   Properties:
+  #     RestApiId: !Ref ApiGateway
+  #     ContentType: application/json
+  #     Description: Schema for logging in user
+  #     Name: LoginModel
+  #     Schema:
+  #       $schema: 'http://json-schema.org/draft-04/schema#'
+  #       title: Login
+  #       type: object
+  #       properties:
+  #         email:
+  #           type: string
+  #         password:
+  #           type: string
 
-  RegisterModel:
-    Type: AWS::ApiGateway::Model
-    Properties:
-      RestApiId: !Ref ApiGateway
-      ContentType: application/json
-      Description: Schema for registering a user
-      Name: RegisterModel
-      Schema:
-        $schema: 'http://json-schema.org/draft-04/schema#'
-        title: Register
-        type: object
-        properties:
-          username:
-            type: string
-          email:
-            type: string
-          password:
-            type: string
+  # RegisterModel:
+  #   Type: AWS::ApiGateway::Model
+  #   Properties:
+  #     RestApiId: !Ref ApiGateway
+  #     ContentType: application/json
+  #     Description: Schema for registering a user
+  #     Name: RegisterModel
+  #     Schema:
+  #       $schema: 'http://json-schema.org/draft-04/schema#'
+  #       title: Register
+  #       type: object
+  #       properties:
+  #         username:
+  #           type: string
+  #         email:
+  #           type: string
+  #         password:
+  #           type: string
 
-  EmptyModel:
-    Type: AWS::ApiGateway::Model
-    Properties:
-      RestApiId: !Ref ApiGateway
-      ContentType: application/json
-      Description: Default empty schema model
-      Name: EmptyModel
-      Schema:
-        $schema: 'http://json-schema.org/draft-04/schema#'
-        title: Empty
-        type: object
+  # EmptyModel:
+  #   Type: AWS::ApiGateway::Model
+  #   Properties:
+  #     RestApiId: !Ref ApiGateway
+  #     ContentType: application/json
+  #     Description: Default empty schema model
+  #     Name: EmptyModel
+  #     Schema:
+  #       $schema: 'http://json-schema.org/draft-04/schema#'
+  #       title: Empty
+  #       type: object
   
-  UpdateModel:
-    Type: AWS::ApiGateway::Model
-    Properties:
-      RestApiId: !Ref ApiGateway
-      ContentType: application/json
-      Description: Schema for updating item
-      Name: UpdateItem
-      Schema:
-        $schema: 'http://json-schema.org/draft-04/schema#'
-        title: Update
-        type: object
-        properties:
-          title:
-            type: string
-          titleValue:
-            type: string
-          details:
-            type: string
-          detailsValue:
-            type: string
-          dueDate:
-            type: string
-          dueDateValue:
-            type: string
-          completed: 
-            type: string
-          completedValue:
-            type: string
+  # UpdateModel:
+  #   Type: AWS::ApiGateway::Model
+  #   Properties:
+  #     RestApiId: !Ref ApiGateway
+  #     ContentType: application/json
+  #     Description: Schema for updating item
+  #     Name: UpdateItem
+  #     Schema:
+  #       $schema: 'http://json-schema.org/draft-04/schema#'
+  #       title: Update
+  #       type: object
+  #       properties:
+  #         title:
+  #           type: string
+  #         titleValue:
+  #           type: string
+  #         details:
+  #           type: string
+  #         detailsValue:
+  #           type: string
+  #         dueDate:
+  #           type: string
+  #         dueDateValue:
+  #           type: string
+  #         completed: 
+  #           type: string
+  #         completedValue:
+  #           type: string
 
-  CreateMethodDocPart:
-    Type: AWS::ApiGateway::DocumentationPart
-    Properties:
-      Location:
-        Type: METHOD
-        Method: POST
-        Path: /items 
-      Properties: '{"tags": ["items"], "description": "Method to create item"}'
-      RestApiId: !Ref ApiGateway
+  # CreateMethodDocPart:
+  #   Type: AWS::ApiGateway::DocumentationPart
+  #   Properties:
+  #     Location:
+  #       Type: METHOD
+  #       Method: POST
+  #       Path: /items 
+  #     Properties: '{"tags": ["items"], "description": "Method to create item"}'
+  #     RestApiId: !Ref ApiGateway
 
-  ReadMethodDocPart:
-    Type: AWS::ApiGateway::DocumentationPart
-    Properties:
-      Location:
-        Type: METHOD
-        Method: GET
-        Path: /items
-      Properties: '{"tags": ["items"], "description": "Method to read one item with query or all without query"}'
-      RestApiId: !Ref ApiGateway
+  # ReadMethodDocPart:
+  #   Type: AWS::ApiGateway::DocumentationPart
+  #   Properties:
+  #     Location:
+  #       Type: METHOD
+  #       Method: GET
+  #       Path: /items
+  #     Properties: '{"tags": ["items"], "description": "Method to read one item with query or all without query"}'
+  #     RestApiId: !Ref ApiGateway
 
-  ReadQueryDoc:
-    Type: AWS::ApiGateway::DocumentationPart
-    Properties:
-      Location:
-        Type: QUERY_PARAMETER
-        Path: /items
-        Method: GET
-        Name: itemId
-      Properties: '{"Description": "ID of item used for searching."}'
-      RestApiId: !Ref ApiGateway
+  # ReadQueryDoc:
+  #   Type: AWS::ApiGateway::DocumentationPart
+  #   Properties:
+  #     Location:
+  #       Type: QUERY_PARAMETER
+  #       Path: /items
+  #       Method: GET
+  #       Name: itemId
+  #     Properties: '{"Description": "ID of item used for searching."}'
+  #     RestApiId: !Ref ApiGateway
 
-  UpdateMethodDocPart:
-    Type: AWS::ApiGateway::DocumentationPart
-    Properties:
-      Location:
-        Type: METHOD
-        Method: PUT
-        Path: /items
-      Properties: '{"tags": ["items"], "description": "Method to update an item"}'
-      RestApiId: !Ref ApiGateway
+  # UpdateMethodDocPart:
+  #   Type: AWS::ApiGateway::DocumentationPart
+  #   Properties:
+  #     Location:
+  #       Type: METHOD
+  #       Method: PUT
+  #       Path: /items
+  #     Properties: '{"tags": ["items"], "description": "Method to update an item"}'
+  #     RestApiId: !Ref ApiGateway
 
-  UpdateQueryDoc:
-    Type: AWS::ApiGateway::DocumentationPart
-    Properties:
-      Location:
-        Type: QUERY_PARAMETER
-        Path: /items
-        Method: PUT
-        Name: itemId
-      Properties: '{"Description": "ID of item used for searching."}'
-      RestApiId: !Ref ApiGateway
+  # UpdateQueryDoc:
+  #   Type: AWS::ApiGateway::DocumentationPart
+  #   Properties:
+  #     Location:
+  #       Type: QUERY_PARAMETER
+  #       Path: /items
+  #       Method: PUT
+  #       Name: itemId
+  #     Properties: '{"Description": "ID of item used for searching."}'
+  #     RestApiId: !Ref ApiGateway
 
-  DeleteMethodDocPart:
-    Type: AWS::ApiGateway::DocumentationPart
-    Properties:
-      Location:
-        Type: METHOD
-        Method: DELETE
-        Path: /items
-      Properties: '{"tags": ["items"], "description": "Method to delete an item"}'
-      RestApiId: !Ref ApiGateway
+  # DeleteMethodDocPart:
+  #   Type: AWS::ApiGateway::DocumentationPart
+  #   Properties:
+  #     Location:
+  #       Type: METHOD
+  #       Method: DELETE
+  #       Path: /items
+  #     Properties: '{"tags": ["items"], "description": "Method to delete an item"}'
+  #     RestApiId: !Ref ApiGateway
 
-  DeleteQueryDoc:
-    Type: AWS::ApiGateway::DocumentationPart
-    Properties:
-      Location:
-        Type: QUERY_PARAMETER
-        Path: items
-        Method: DELETE
-        Name: itemId
-      Properties: '{"Description": "ID of item used for searching."}'
-      RestApiId: !Ref ApiGateway
+  # DeleteQueryDoc:
+  #   Type: AWS::ApiGateway::DocumentationPart
+  #   Properties:
+  #     Location:
+  #       Type: QUERY_PARAMETER
+  #       Path: items
+  #       Method: DELETE
+  #       Name: itemId
+  #     Properties: '{"Description": "ID of item used for searching."}'
+  #     RestApiId: !Ref ApiGateway
 
-  DocVersion:
-    Type: AWS::ApiGateway::DocumentationVersion
-    Properties:
-      Description: Initial version
-      DocumentationVersion: v1.0
-      RestApiId: !Ref ApiGateway
+  # DocVersion:
+  #   Type: AWS::ApiGateway::DocumentationVersion
+  #   Properties:
+  #     Description: Initial version
+  #     DocumentationVersion: v1.0
+  #     RestApiId: !Ref ApiGateway
 
   CognitoUserPool:
     Type: AWS::Cognito::UserPool
@@ -357,7 +357,7 @@ Resources:
       CodeUri: to-do_list/
       Handler: readItem.handler
       # Runtime: nodejs16.x
-      Role: arn:aws:iam::998203903345:role/LabRole
+      # Role: arn:aws:iam::998203903345:role/LabRole
       Architectures:
         - x86_64
       Events:
@@ -376,7 +376,7 @@ Resources:
       CodeUri: to-do_list/
       Handler: updateItem.handler
       # Runtime: nodejs16.x
-      Role: arn:aws:iam::998203903345:role/LabRole
+      # Role: arn:aws:iam::998203903345:role/LabRole
       Architectures:
         - x86_64
       Events:
@@ -395,7 +395,7 @@ Resources:
       CodeUri: to-do_list/
       Handler: deleteItem.handler
       # Runtime: nodejs16.x
-      Role: arn:aws:iam::998203903345:role/LabRole
+      # Role: arn:aws:iam::998203903345:role/LabRole
       Architectures:
         - x86_64
       Events:
@@ -414,7 +414,7 @@ Resources:
       CodeUri: to-do_list/
       Handler: createItem.handler
       # Runtime: nodejs16.x
-      Role: arn:aws:iam::998203903345:role/LabRole
+      # Role: arn:aws:iam::998203903345:role/LabRole
       Architectures:
         - x86_64
       Events:
@@ -432,7 +432,7 @@ Resources:
       CodeUri: to-do_list/
       Handler: auth.handler
       # Runtime: nodejs16.x
-      Role: arn:aws:iam::998203903345:role/LabRole
+      # Role: arn:aws:iam::998203903345:role/LabRole
       Architectures:
         - x86_64
       Events:
@@ -467,7 +467,7 @@ Resources:
       CodeUri: to-do_list/
       Handler: roleManager.handler
       MemorySize: 256
-      Role: arn:aws:iam::998203903345:role/LabRole
+      # Role: arn:aws:iam::998203903345:role/LabRole
       Architectures:
         - x86_64
       Events:

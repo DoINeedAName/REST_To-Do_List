@@ -1,10 +1,10 @@
 const AWS = require("aws-sdk");
 
 const cognitoidentityserviceprovider = new AWS.CognitoIdentityServiceProvider({
-  region: 'us-east-1'
+  region: 'ap-southeast-2'
 });
 const clientId = 'eq77br5ct0pdc1fiufb50lc1c';
-const userPoolId = 'us-east-1_eDIQHalKN';
+const userPoolId = 'ap-southeast-2_eDIQHalKN';
 
 exports.handler = async (event) => {
   console.log("path: " + event.path);

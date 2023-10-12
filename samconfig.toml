@@ -10,3 +10,12 @@ capabilities = "CAPABILITY_IAM"
 disable_rollback = true
 image_repositories = []
 confirm_changeset = true
+
+[dev.deploy.parameters]
+stack_name = "To-Do-List"
+resolve_s3 = true
+s3_prefix = "To-Do-List"
+region = "ap-southeast-2"
+confirm_changeset = true
+capabilities = "CAPABILITY_IAM"
+image_repositories = []

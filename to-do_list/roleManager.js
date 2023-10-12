@@ -1,11 +1,11 @@
 const AWS = require("aws-sdk");
 // cisp = cognitoidentityserviceprovider
 const cisp = new AWS.CognitoIdentityServiceProvider({
-  region: 'us-east-1'
+  region: 'ap-southeast-2'
 });
 
 const clientId = '19sg015uj1i7f1jedoagcvo9t9';
-const userPoolId = 'us-east-1_Q5rfyIZ6x';
+const userPoolId = 'ap-southeast-2_Q5rfyIZ6x';
 
 exports.handler = async (event) => {
   const requestBody = JSON.parse(event.body);

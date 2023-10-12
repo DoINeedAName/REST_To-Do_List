@@ -1,9 +1,9 @@
 const AWS = require("aws-sdk");
 // const {randomUUID} = require('crypto')
 
-AWS.config.update({
-    region: "us-east-1"
-});
+// AWS.config.update({
+//     region: "us-east-1"
+// });
 
 const docClient = new AWS.DynamoDB.DocumentClient();
 const cognitoProvider = new AWS.CognitoIdentityServiceProvider();
